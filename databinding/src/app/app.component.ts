@@ -9,6 +9,10 @@ import { Component } from '@angular/core';
 export class AppComponent {
   serverElements = [{ type: 'server', name: 'testserver', content: 'this is a test' }];
 
+  onIntervalFired(firedNumer: number) {
+    console.log(firedNumer)
+  }
+
   onServerAdded(serverData: { servername: string, serverContent: string }) {
     this.serverElements.push({
       type: 'server',
