@@ -9,18 +9,7 @@
     </div>
     <hr>
     <div class="col-xs-12">
-        <a href="#" class="list-group-item clearfix" *ngFor="let contact of contacts">
-            <div class="pull-left col-xs-12">
-                <h4 class="col-xs-12">
-                    {{ contact.name }}
-                </h4>
-                <hr>
-                <hr>
-            </div>
-            <span class="pull-right">
-                <img [src]="contact.imagePath" alt="{{contact.name}}" class="img-responsive img-rounded"
-                    style="max-height: 100px">
-            </span>
-        </a>
+        <app-contact-item *ngFor="let contact of contacts" [contact]="contact"
+            (click)="onSelected(contact)"></app-contact-item>
     </div>
 </div>
