@@ -4,6 +4,6 @@ export default class Document {
         public name: string,
         public description: string,
         public url: string,
-        public children: any[]
+        // public children: any[]
     ) { }
 }
