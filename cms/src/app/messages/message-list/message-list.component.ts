@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import Message from '../message.model'
+import { MessageService } from '../message.service';
 
 @Component({
   selector: 'app-message-list',
@@ -8,14 +9,18 @@ import Message from '../message.model'
   styleUrl: './message-list.component.css'
 })
 export class MessageListComponent {
-  messages = [
-    new Message("1", 'Work', "You Good to work tomorrow?", "Joey"),
-    new Message("2", 'Food', "You Good to work tomorrow?", "Jan"),
-    new Message("3", 'Fun', "You Good to work tomorrow?", "Bob"),
-    new Message("4", 'Play', "You Good to work tomorrow?", "Bill"),
-    new Message("5", 'IDK', "You Good to work tomorrow?", "Jose"),
-  ]
+  messages: Message[] = []
+  @Output() selectedMessage = new EventEmitter<Message>()
 
+  constructor(private messageService: MessageService) { }
+
+  ngOnInit() {
+    this.messages = this.messageService.getMessages();
+
+    if (this.messages.length > 0) {
+      this.messageService.messageSelectedEvent.emit(this.messages[0]);
+    }
+  }
 
   onAddMessage(message: Message) {
     this.messages.push(message)

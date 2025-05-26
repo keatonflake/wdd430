@@ -1,9 +1,9 @@
 export default class Document {
     constructor(
-        public id: string,
-        public name: string,
-        public description: string,
-        public url: string,
-        // public children: any[]
+        public id: string = '',
+        public name: string = '',
+        public url: string = '',
+        public children: Document[] | null = null,
+        public description?: string
     ) { }
 }
