@@ -1,4 +1,4 @@
-export default class Document {
+export class Document {
     constructor(
         public id: string = '',
         public name: string = '',

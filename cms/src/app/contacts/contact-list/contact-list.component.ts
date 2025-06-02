@@ -19,9 +19,9 @@ export class ContactListComponent implements OnInit {
     if (this.contacts.length > 0) {
       this.contactService.contactSelectedEvent.emit(this.contacts[0]);
     }
-  }
 
-  onSelected(contact: Contact) {
-    this.contactService.contactSelectedEvent.emit(contact);
+    this.contactService.contactChangedEvent.subscribe((newContacts: Contact[]) => {
+      this.contacts = newContacts
+    })
   }
 }

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import Document from '../document.model';
+import { Document } from '../document.model';
 
 @Component({
   selector: 'app-document-item',
@@ -9,4 +9,8 @@ import Document from '../document.model';
 })
 export class DocumentItemComponent {
   @Input() document?: Document
+
+  clicklog(e: any) {
+    console.log(e)
+  }
 }
