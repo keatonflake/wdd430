@@ -9,7 +9,7 @@ import { Subject } from 'rxjs';
 })
 export class DocumentService {
   documents: Document[] = []
-  maxDocumentId: Number
+  maxDocumentId: number
 
   @Output() documentSelectedEvent = new EventEmitter<Document>();
   documentChangedEvent = new Subject<Document[]>();
@@ -44,7 +44,9 @@ export class DocumentService {
     if (!document) {
       return;
     }
-    document.id = this.maxDocumentId.toString()
+    this.maxDocumentId++;
+    document.id = this.maxDocumentId.toString();
+
     this.documents.push(document)
     this.documentChangedEvent.next(this.documents.slice())
   }

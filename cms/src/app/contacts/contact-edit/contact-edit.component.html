@@ -1,1 +1,84 @@
-<p>edit-contact works!</p>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <form id="contact-edit" #f="ngForm" (ngSubmit)="onSubmit(f)">
+      <div class="row">
+        <div class="col-sm-12 form-group">
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" [ngModel]="contact.name" #name="ngModel" required
+            class="form-control" size="120" max="120">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 form-group">
+          <label for="email">Email:</label>
+          <input type="text" id="email" name="email" [ngModel]="contact.email" #email="ngModel" required
+            class="form-control" size="120" max="255">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 form-group">
+          <label for="phone">Phone:</label>
+          <input type="text" id="phone" name="phone" [ngModel]="contact.phone" #phone="ngModel" class="form-control"
+            size="150" max="255">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 form-group">
+          <label for="imageUrl">Image URL:</label>
+          <input type="text" id="imageUrl" name="imagePath" [ngModel]="contact.imagePath" #imagePath="ngModel"
+            class="form-control" size="150" max="255">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="groupList">Group Contacts:</label>
+
+          <!-- Drop Zone for Group Contacts -->
+          <div class="row" id="groupList"
+            style="min-height: 200px; border: 2px dashed #ccc; border-radius: 5px; padding: 10px; margin: 10px 0;"
+            cdkDropList id="groupContactsList" [cdkDropListData]="groupContacts" cdkDropListConnectedTo="contactsList"
+            (cdkDropListDropped)="onContactDropped($event)" cdkDropListOrientation="vertical">
+
+            <!-- Existing Group Contacts (draggable within the group) -->
+            <div *ngFor="let contact of groupContacts; let i = index" cdkDrag class="drag-item"
+              style="margin-bottom: 5px; cursor: move;">
+              <div class="row" style="background: #f9f9f9; border: 1px solid #ddd; border-radius: 3px; padding: 5px;">
+                <app-contact-item class="col-sm-10" [contact]="contact"></app-contact-item>
+                <div class="col-sm-2">
+                  <button class="btn btn-danger btn-xs" (click)="onRemoveItem(i)" type="button">×</button>
+                </div>
+              </div>
+
+              <!-- CDK Drag placeholder -->
+              <div *cdkDragPlaceholder class="drag-placeholder"
+                style="background: #e0e0e0; border: 2px dashed #999; min-height: 60px; border-radius: 3px;"></div>
+            </div>
+
+            <!-- Drop zone message -->
+            <div class="drop-zone-message" *ngIf="groupContacts.length < 1"
+              style="text-align: center; color: #666; font-style: italic; padding: 20px;">
+              Drag contacts from the contact list to add them to this group
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div *ngIf="(name.touched && name.invalid) || (email.touched && email.invalid)" class="row alert alert-danger">
+        Name and Email are required fields
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 btn-toolbar">
+          <button [disabled]="f.invalid" class="btn btn-success" type="submit">Save</button>
+          <button class="btn btn-primary" type="button" (click)="onCancel()">Cancel</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>

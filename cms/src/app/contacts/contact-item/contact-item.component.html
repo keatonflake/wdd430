@@ -2,11 +2,27 @@
     <div class="row">
         <div class="col-xs-8">
             <h4 class="list-group-item-heading">{{ contact?.name }}</h4>
+            <small *ngIf="contact?.group && contact?.group?.length" class="text-muted">
+                Group ({{ contact?.group?.length }} members)
+            </small>
+            <small *ngIf="!contact?.group" class="text-muted">
+                {{ contact?.email }}
+            </small>
         </div>
         <div class="col-xs-4">
             <div class="pull-right">
-                <img [src]="contact?.imagePath" alt="{{contact?.name}}" class="img-responsive img-rounded"
-                    style="max-height: 80px; max-width: 100%;">
+                <img *ngIf="!contact?.group && contact?.imagePath" [src]="contact?.imagePath" alt="{{contact?.name}}"
+                    class="img-responsive img-rounded" style="max-height: 80px; max-width: 100%;">
+
+                <div *ngIf="contact?.group && contact?.group?.length" class="text-center">
+                    <i class="fa fa-users" style="font-size: 40px; color: #337ab7;" *ngIf="contact?.group"></i>
+                    <span *ngIf="!contact?.group" style="font-size: 40px; color: #337ab7;">👥</span>
+                </div>
+
+                <div *ngIf="!contact?.group && !contact?.imagePath" class="text-center">
+                    <i class="fa fa-user" style="font-size: 40px; color: #666;" *ngIf="!contact?.imagePath"></i>
+                    <span *ngIf="!contact?.imagePath" style="font-size: 40px; color: #666;">👤</span>
+                </div>
             </div>
         </div>
     </div>

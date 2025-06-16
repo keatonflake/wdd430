@@ -6,7 +6,8 @@
             </div>
             <hr>
             <hr>
-            <div class="row">
+
+            <div *ngIf="!contact?.group" class="row">
                 <div class="col-xs-8">
                     <img [src]="contact?.imagePath" alt="{{contact?.name}}" class="img-responsive"
                         style="max-height: 100px">
@@ -16,9 +17,35 @@
                     <button (click)="onDelete()" class="btn btn-danger">Delete</button>
                 </div>
             </div>
-            <div class="col-xs-12 list-group-item-text" style="margin-top: 15px;">
+
+            <div *ngIf="contact?.group && contact?.group?.length" class="row">
+                <div class="col-xs-8">
+                    <h5>Group Members:</h5>
+                    <div class="row" style="margin-bottom: 10px;" *ngFor="let member of contact?.group">
+                        <div class="col-xs-3">
+                            <img [src]="member.imagePath" alt="{{member.name}}" class="img-responsive img-rounded"
+                                style="max-height: 50px; max-width: 50px;">
+                        </div>
+                        <div class="col-xs-9">
+                            <strong>{{ member.name }}</strong><br>
+                            <small>{{ member.email }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4 text-right">
+                    <button [routerLink]="['/contacts', contact?.id, 'edit']" class="btn btn-primary">Edit</button>
+                    <button (click)="onDelete()" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+
+            <div *ngIf="!contact?.group" class="col-xs-12 list-group-item-text" style="margin-top: 15px;">
                 <span class="col-xs-12">Email: {{ contact?.email }}</span>
                 <span class="col-xs-12">Phone: {{ contact?.phone }}</span>
+            </div>
+
+            <div *ngIf="contact?.group && contact?.group?.length" class="col-xs-12 list-group-item-text"
+                style="margin-top: 15px;">
+                <span class="col-xs-12">Group Size: {{ contact?.group?.length }} members</span>
             </div>
         </a>
     </div>

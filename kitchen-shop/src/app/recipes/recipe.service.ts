@@ -5,8 +5,11 @@ import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import { Subject } from 'rxjs';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RecipeService {
+
+  recipeChanged = new Subject<Recipe[]>()
+
   private recipes: Recipe[] = [
     new Recipe(
       'Tasty Schnitzel',
@@ -35,7 +38,24 @@ export class RecipeService {
     return this.recipes[index]
   }
 
+  addRecipe(newRecipe: Recipe) {
+    this.recipes.push(newRecipe)
+    this.recipeChanged.next(this.recipes.slice())
+  }
+
+  updateRecipe(index: number, newRecipe: Recipe) {
+    this.recipes[index] = newRecipe
+    this.recipeChanged.next(this.recipes.slice())
+  }
+
   addIngredientsToShoppingList(ingredients: Ingredient[]) {
     this.slService.addIngredients(ingredients);
+  }
+
+  deleteRecipe(index: number) {
+    this.recipes = this.recipes.filter((item) => {
+      item != this.recipes[index]
+    })
+    this.recipeChanged.next(this.recipes.slice())
   }
 }
