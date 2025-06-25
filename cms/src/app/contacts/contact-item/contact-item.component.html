@@ -11,7 +11,7 @@
         </div>
         <div class="col-xs-4">
             <div class="pull-right">
-                <img *ngIf="!contact?.group && contact?.imagePath" [src]="contact?.imagePath" alt="{{contact?.name}}"
+                <img *ngIf="!contact?.group && contact?.imageUrl" [src]="contact?.imageUrl" alt="{{contact?.name}}"
                     class="img-responsive img-rounded" style="max-height: 80px; max-width: 100%;">
 
                 <div *ngIf="contact?.group && contact?.group?.length" class="text-center">
@@ -19,9 +19,9 @@
                     <span *ngIf="!contact?.group" style="font-size: 40px; color: #337ab7;">👥</span>
                 </div>
 
-                <div *ngIf="!contact?.group && !contact?.imagePath" class="text-center">
-                    <i class="fa fa-user" style="font-size: 40px; color: #666;" *ngIf="!contact?.imagePath"></i>
-                    <span *ngIf="!contact?.imagePath" style="font-size: 40px; color: #666;">👤</span>
+                <div *ngIf="!contact?.group && !contact?.imageUrl" class="text-center">
+                    <i class="fa fa-user" style="font-size: 40px; color: #666;" *ngIf="!contact?.imageUrl"></i>
+                    <span *ngIf="!contact?.imageUrl" style="font-size: 40px; color: #666;">👤</span>
                 </div>
             </div>
         </div>

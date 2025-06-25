@@ -47,7 +47,7 @@ export class ContactEditComponent implements OnInit {
       this.contact.name = this.originalContact.name;
       this.contact.email = this.originalContact.email;
       this.contact.phone = this.originalContact.phone;
-      this.contact.imagePath = this.originalContact.imagePath;
+      this.contact.imageUrl = this.originalContact.imageUrl;
       this.contact.group = this.originalContact.group;
 
       if (this.contact.group) {
@@ -88,7 +88,7 @@ export class ContactEditComponent implements OnInit {
     newContact.name = value.name || '';
     newContact.email = value.email || '';
     newContact.phone = value.phone || '';
-    newContact.imagePath = value.imagePath || '';
+    newContact.imageUrl = value.imageUrl || '';
     newContact.group = this.groupContacts && this.groupContacts.length > 0 ? [...this.groupContacts] : null;
 
     if (this.editMode && this.originalContact) {

@@ -9,7 +9,7 @@
 
             <div *ngIf="!contact?.group" class="row">
                 <div class="col-xs-8">
-                    <img [src]="contact?.imagePath" alt="{{contact?.name}}" class="img-responsive"
+                    <img [src]="contact?.imageUrl" alt="{{contact?.name}}" class="img-responsive"
                         style="max-height: 100px">
                 </div>
                 <div class="col-xs-4 text-right">
@@ -23,7 +23,7 @@
                     <h5>Group Members:</h5>
                     <div class="row" style="margin-bottom: 10px;" *ngFor="let member of contact?.group">
                         <div class="col-xs-3">
-                            <img [src]="member.imagePath" alt="{{member.name}}" class="img-responsive img-rounded"
+                            <img [src]="member.imageUrl" alt="{{member.name}}" class="img-responsive img-rounded"
                                 style="max-height: 50px; max-width: 50px;">
                         </div>
                         <div class="col-xs-9">

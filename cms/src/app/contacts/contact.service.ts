@@ -1,24 +1,38 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Contact } from './contact.model';
-import { MOCKCONTACTS } from './MOCKCONTACTS';
 import { Subject } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContactService {
   contacts: Contact[] = [];
-  maxContactId: Number;
+  maxContactId: number;
 
   @Output() contactSelectedEvent = new EventEmitter<Contact>();
   contactChangedEvent = new Subject<Contact[]>();
 
-  constructor() {
-    this.contacts = MOCKCONTACTS;
+  constructor(private http: HttpClient) {
+    this.contacts = this.getContacts()
     this.maxContactId = this.getMaxId();
   }
 
   getContacts(): Contact[] {
+    this.http.get<Contact[]>('https://wdd-430-cms-be399-default-rtdb.firebaseio.com/contacts.json')
+      .subscribe({
+        next: (contacts: Contact[]) => {
+          console.log(contacts)
+          this.contacts = contacts;
+          this.maxContactId = this.getMaxId();
+          this.contacts.sort((a, b) => +a.id - +b.id);
+          this.contactChangedEvent.next(this.contacts.slice());
+        },
+        error: (error: any) => {
+          console.log(error);
+        }
+      });
+
     return this.contacts.slice();
   }
 
@@ -26,23 +40,58 @@ export class ContactService {
     return this.contacts.find(contact => contact.id === id) || null;
   }
 
+  storeContacts() {
+    const contacts = JSON.stringify(this.contacts);
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    this.http.put('https://wdd-430-cms-be399-default-rtdb.firebaseio.com/contacts.json', contacts, { headers: headers })
+      .subscribe({
+        next: () => {
+          this.contactChangedEvent.next(this.contacts.slice());
+        }
+      });
+  }
+
   deleteContact(contact: Contact) {
     if (!contact) return;
 
-    const pos = this.contacts.indexOf(contact);
-    if (pos < 0) return;
-
-    this.contacts.splice(pos, 1);
-    this.contactChangedEvent.next(this.contacts.slice());
+    this.http.delete(`https://wdd-430-cms-be399-default-rtdb.firebaseio.com/contacts/${contact.id}.json`)
+      .subscribe({
+        next: () => {
+          const pos = this.contacts.indexOf(contact);
+          if (pos >= 0) {
+            this.contacts.splice(pos, 1);
+            this.contactChangedEvent.next(this.contacts.slice());
+          }
+        },
+        error: (error: any) => {
+          console.log('Delete failed:', error);
+        }
+      });
   }
 
   addContact(contact: Contact) {
     if (!contact) return;
 
-    this.maxContactId = +this.maxContactId + 1;
-    contact.id = this.maxContactId.toString();
-    this.contacts.push(contact);
-    this.contactChangedEvent.next(this.contacts.slice());
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    this.http.put(`https://wdd-430-cms-be399-default-rtdb.firebaseio.com/contacts/${contact.id}.json`,
+      JSON.stringify(contact),
+      { headers: headers })
+      .subscribe({
+        next: () => {
+          this.contacts.push(contact);
+          this.contactChangedEvent.next(this.contacts.slice());
+        },
+        error: (error: any) => {
+          console.log('Add failed:', error);
+        }
+      });
   }
 
   updateContact(originalContact: Contact, newContact: Contact) {
@@ -52,8 +101,23 @@ export class ContactService {
     if (pos < 0) return;
 
     newContact.id = originalContact.id;
-    this.contacts[pos] = newContact;
-    this.contactChangedEvent.next(this.contacts.slice());
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    this.http.put(`https://wdd-430-cms-be399-default-rtdb.firebaseio.com/contacts/${originalContact.id}.json`,
+      JSON.stringify(newContact),
+      { headers: headers })
+      .subscribe({
+        next: () => {
+          this.contacts[pos] = newContact;
+          this.contactChangedEvent.next(this.contacts.slice());
+        },
+        error: (error: any) => {
+          console.log('Update failed:', error);
+        }
+      });
   }
 
   getMaxId(): number {
