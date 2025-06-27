@@ -10,12 +10,13 @@ export class ContactService {
   contacts: Contact[] = [];
   maxContactId: number;
 
-  @Output() contactSelectedEvent = new EventEmitter<Contact>();
+  contactSelectedEvent = new EventEmitter<Contact>();
   contactChangedEvent = new Subject<Contact[]>();
 
   constructor(private http: HttpClient) {
-    this.contacts = this.getContacts()
-    this.maxContactId = this.getMaxId();
+    this.contacts = [];
+    this.maxContactId = 0;
+    this.getContacts();
   }
 
   getContacts(): Contact[] {
@@ -23,9 +24,18 @@ export class ContactService {
       .subscribe({
         next: (contacts: Contact[]) => {
           console.log(contacts)
-          this.contacts = contacts;
+          this.contacts = contacts || [];
+
+          this.contacts = this.contacts.filter(contact => contact != null);
+
           this.maxContactId = this.getMaxId();
-          this.contacts.sort((a, b) => +a.id - +b.id);
+          if (this.contacts.length > 0) {
+            this.contacts.sort((a, b) => {
+              if (!a || !a.id) return 1;
+              if (!b || !b.id) return -1;
+              return +a.id - +b.id;
+            });
+          }
           this.contactChangedEvent.next(this.contacts.slice());
         },
         error: (error: any) => {
@@ -37,7 +47,11 @@ export class ContactService {
   }
 
   getContact(id: string): Contact | null {
-    return this.contacts.find(contact => contact.id === id) || null;
+    let result = this.contacts.find(contact => contact.id === id) || null;
+    if (!result) {
+      console.log(id + " sender not found")
+    }
+    return result
   }
 
   storeContacts() {
@@ -75,6 +89,11 @@ export class ContactService {
 
   addContact(contact: Contact) {
     if (!contact) return;
+
+    if (!contact.id) {
+      this.maxContactId++;
+      contact.id = this.maxContactId.toString();
+    }
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
@@ -122,10 +141,17 @@ export class ContactService {
 
   getMaxId(): number {
     let maxId = 0;
+
+    if (!this.contacts || this.contacts.length === 0) {
+      return maxId;
+    }
+
     this.contacts.forEach((contact) => {
-      const currentId = +contact.id;
-      if (currentId > maxId) {
-        maxId = currentId;
+      if (contact && contact.id) {
+        const currentId = +contact.id;
+        if (currentId > maxId) {
+          maxId = currentId;
+        }
       }
     });
     return maxId;

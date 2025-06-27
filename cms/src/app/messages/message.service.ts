@@ -20,6 +20,7 @@ export class MessageService {
     this.http.get<Message[]>('https://wdd-430-cms-be399-default-rtdb.firebaseio.com/messages.json')
       .subscribe({
         next: (messages: Message[]) => {
+          console.log(messages)
           this.messages = messages || [];
           this.maxMessageId = this.getMaxId();
           this.messageChangedEvent.emit(this.messages.slice())
