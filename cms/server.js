@@ -1,3 +1,7 @@
+require("dotenv").config();
+
+const connectDB = require("./server/config/database");
+
 // Get dependencies
 var express = require("express");
 var path = require("path");
@@ -48,6 +52,8 @@ app.use("/", index);
 app.use("/messages", messageRoutes);
 app.use("/contacts", contactRoutes);
 app.use("/documents", documentRoutes);
+
+connectDB();
 
 // Tell express to map all other non-defined routes back to the index page
 app.use((req, res) => {
