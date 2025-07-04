@@ -1,8 +1,6 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import Message from '../message.model'
-import { ContactService } from '../../contacts/contact.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { Message } from '../message.model';
 import { Contact } from '../../contacts/contact.model';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-message-item',
@@ -10,35 +8,29 @@ import { Subscription } from 'rxjs';
   templateUrl: './message-item.component.html',
   styleUrl: './message-item.component.css'
 })
-export class MessageItemComponent implements OnInit, OnDestroy {
+export class MessageItemComponent implements OnInit {
   @Input() message!: Message;
   messageSender?: string;
-  private contactSubscription?: Subscription;
 
-  constructor(private contactService: ContactService) { }
+  constructor() { }
 
   ngOnInit() {
     this.setSender();
-
-    this.contactSubscription = this.contactService.contactChangedEvent.subscribe(
-      (contacts: Contact[]) => {
-        this.setSender();
-      }
-    );
-  }
-
-  ngOnDestroy() {
-    if (this.contactSubscription) {
-      this.contactSubscription.unsubscribe();
-    }
   }
 
   private setSender() {
-    const contact: Contact | null = this.contactService.getContact(this.message.sender);
-    if (contact) {
-      this.messageSender = contact.name;
+    if (this.message.sender) {
+      if (this.isContact(this.message.sender)) {
+        this.messageSender = this.message.sender.name;
+      } else {
+        this.messageSender = `Contact ID: ${this.message.sender}`;
+      }
     } else {
       this.messageSender = 'Unknown Sender';
     }
+  }
+
+  private isContact(sender: Contact | string): sender is Contact {
+    return typeof sender === 'object' && sender !== null && 'name' in sender;
   }
 }

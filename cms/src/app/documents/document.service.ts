@@ -15,14 +15,13 @@ export class DocumentService {
   @Output() documentSelectedEvent = new EventEmitter<Document>();
   documentChangedEvent = new Subject<Document[]>();
 
-
   constructor(private http: HttpClient) {
     this.documents = MOCKDOCUMENTS
     this.maxDocumentId = this.getMaxId();
   }
 
   getDocuments(): Document[] {
-    this.http.get<Document[]>('https://wdd-430-cms-be399-default-rtdb.firebaseio.com/documents.json')
+    this.http.get<Document[]>('http://localhost:3000/documents')
       .subscribe({
         next: (documents: Document[]) => {
           this.documents = documents;
@@ -43,13 +42,12 @@ export class DocumentService {
   }
 
   storeDocuments() {
-    const documents = JSON.stringify(this.documents)
-
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    this.http.put('https://wdd-430-cms-be399-default-rtdb.firebaseio.com/documents.json', documents, { headers: headers })
+    // Send as JSON object, not stringified
+    this.http.put('http://localhost:3000/documents', this.documents, { headers: headers })
       .subscribe({
         next: () => {
           this.documentChangedEvent.next(this.documents.slice());
@@ -62,7 +60,7 @@ export class DocumentService {
       return;
     }
 
-    this.http.delete(`https://wdd-430-cms-be399-default-rtdb.firebaseio.com/documents/${document.id}.json`)
+    this.http.delete(`http://localhost:3000/documents/${document.id}`)
       .subscribe({
         next: () => {
           const pos = this.documents.indexOf(document);
@@ -82,19 +80,16 @@ export class DocumentService {
       return;
     }
 
-    this.maxDocumentId++;
-    document.id = this.maxDocumentId.toString();
-
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    this.http.put(`https://wdd-430-cms-be399-default-rtdb.firebaseio.com/documents/${document.id}.json`,
-      JSON.stringify(document),
-      { headers: headers })
+    // Use POST for creation, send as JSON object (not stringified)
+    this.http.post<Document>('http://localhost:3000/documents', document, { headers: headers })
       .subscribe({
-        next: () => {
-          this.documents.push(document);
+        next: (newDocument: Document) => {
+          this.documents.push(newDocument);
+          this.maxDocumentId = this.getMaxId(); // Update maxId after adding
           this.documentChangedEvent.next(this.documents.slice());
         },
         error: (error: any) => {
@@ -119,12 +114,10 @@ export class DocumentService {
       'Content-Type': 'application/json'
     });
 
-    this.http.put(`https://wdd-430-cms-be399-default-rtdb.firebaseio.com/documents/${originalDocument.id}.json`,
-      JSON.stringify(newDocument),
-      { headers: headers })
+    this.http.put<Document>(`http://localhost:3000/documents/${originalDocument.id}`, newDocument, { headers: headers })
       .subscribe({
-        next: () => {
-          this.documents[pos] = newDocument;
+        next: (updatedDocument: Document) => {
+          this.documents[pos] = updatedDocument;
           this.documentChangedEvent.next(this.documents.slice());
         },
         error: (error: any) => {

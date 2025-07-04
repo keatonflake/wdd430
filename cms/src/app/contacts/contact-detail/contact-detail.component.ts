@@ -22,6 +22,15 @@ export class ContactDetailComponent implements OnInit {
       .subscribe((params: Params) => {
         this.id = params['id']
         this.contact = this.contactService.getContact(this.id)
+
+        // If contact not found initially, subscribe to contactChangedEvent
+        if (!this.contact) {
+          this.contactService.contactChangedEvent.subscribe(() => {
+            if (!this.contact) {
+              this.contact = this.contactService.getContact(this.id);
+            }
+          });
+        }
       })
   }
 

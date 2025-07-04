@@ -1,3 +1,4 @@
+// ContactService fixes
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Contact } from './contact.model';
 import { Subject } from 'rxjs';
@@ -20,7 +21,7 @@ export class ContactService {
   }
 
   getContacts(): Contact[] {
-    this.http.get<Contact[]>('https://wdd-430-cms-be399-default-rtdb.firebaseio.com/contacts.json')
+    this.http.get<Contact[]>('http://localhost:3000/contacts')
       .subscribe({
         next: (contacts: Contact[]) => {
           console.log(contacts)
@@ -55,13 +56,12 @@ export class ContactService {
   }
 
   storeContacts() {
-    const contacts = JSON.stringify(this.contacts);
-
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    this.http.put('https://wdd-430-cms-be399-default-rtdb.firebaseio.com/contacts.json', contacts, { headers: headers })
+    // Send as JSON object, not stringified
+    this.http.put('http://localhost:3000/contacts', this.contacts, { headers: headers })
       .subscribe({
         next: () => {
           this.contactChangedEvent.next(this.contacts.slice());
@@ -72,7 +72,7 @@ export class ContactService {
   deleteContact(contact: Contact) {
     if (!contact) return;
 
-    this.http.delete(`https://wdd-430-cms-be399-default-rtdb.firebaseio.com/contacts/${contact.id}.json`)
+    this.http.delete(`http://localhost:3000/contacts/${contact.id}`)
       .subscribe({
         next: () => {
           const pos = this.contacts.indexOf(contact);
@@ -90,22 +90,22 @@ export class ContactService {
   addContact(contact: Contact) {
     if (!contact) return;
 
-    if (!contact.id) {
-      this.maxContactId++;
-      contact.id = this.maxContactId.toString();
-    }
-
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    this.http.put(`https://wdd-430-cms-be399-default-rtdb.firebaseio.com/contacts/${contact.id}.json`,
-      JSON.stringify(contact),
-      { headers: headers })
+    this.http.post<Contact>('http://localhost:3000/contacts', contact, { headers: headers })
       .subscribe({
-        next: () => {
-          this.contacts.push(contact);
-          this.contactChangedEvent.next(this.contacts.slice());
+        next: (newContact: Contact) => {
+          console.log('New contact created:', newContact);
+
+          if (newContact && newContact.id) {
+            this.contacts.push(newContact);
+            this.maxContactId = this.getMaxId();
+            this.contactChangedEvent.next(this.contacts.slice());
+          } else {
+            console.error('New contact does not have an ID:', newContact);
+          }
         },
         error: (error: any) => {
           console.log('Add failed:', error);
@@ -125,12 +125,10 @@ export class ContactService {
       'Content-Type': 'application/json'
     });
 
-    this.http.put(`https://wdd-430-cms-be399-default-rtdb.firebaseio.com/contacts/${originalContact.id}.json`,
-      JSON.stringify(newContact),
-      { headers: headers })
+    this.http.put<Contact>(`http://localhost:3000/contacts/${originalContact.id}`, newContact, { headers: headers })
       .subscribe({
-        next: () => {
-          this.contacts[pos] = newContact;
+        next: (updatedContact: Contact) => {
+          this.contacts[pos] = updatedContact;
           this.contactChangedEvent.next(this.contacts.slice());
         },
         error: (error: any) => {

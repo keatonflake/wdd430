@@ -13,11 +13,10 @@ router.get("/", async (req, res, next) => {
 });
 
 router.post("/", async (req, res, next) => {
-  const maxDocumentId = sequenceGenerator.nextId("documents");
-  const docData = req.body;
-  docData = {
+  const maxDocumentId = await sequenceGenerator.nextId("documents");
+  const docData = {
     id: maxDocumentId,
-    ...docData,
+    ...req.body,
   };
   try {
     const newDoc = new Document(docData);

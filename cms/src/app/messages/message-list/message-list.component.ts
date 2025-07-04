@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
-import Message from '../message.model'
+import { Message } from '../message.model'
 import { MessageService } from '../message.service';
 
 @Component({
@@ -16,6 +16,8 @@ export class MessageListComponent implements OnInit { // Add OnInit
 
   ngOnInit() {
     this.messages = this.messageService.getMessages();
+
+    console.log(this.messages)
 
     this.messageService.messageChangedEvent.subscribe(
       (messages: Message[]) => {

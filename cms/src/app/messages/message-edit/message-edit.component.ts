@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import Message from '../message.model';
+import { Message } from '../message.model';
 import { MessageService } from '../message.service';
 
 @Component({
@@ -22,15 +22,12 @@ export class MessageEditComponent {
     const subjectValue = this.subject.nativeElement.value;
     const messageValue = this.message.nativeElement.value;
 
-    // Generate a unique ID
-    const newId = (Date.now()).toString();
-
-    const newMessage = new Message(
-      newId,
-      subjectValue,
-      messageValue,
-      this.currentSenderId
-    );
+    const newMessage: Message = {
+      id: '',
+      subject: subjectValue,
+      msgText: messageValue,
+      sender: this.currentSenderId
+    };
 
     this.messageService.addMessage(newMessage);
     this.onClear();

@@ -1,8 +1,10 @@
-export default class Message {
-    constructor(
-        public id: string = '',
-        public subject: string = '',
-        public msgText: string = '',
-        public sender: string = '',
-    ) { }
+
+import { Contact } from '../contacts/contact.model';
+
+export interface Message {
+    id: string;
+    subject: string;
+    msgText: string;
+    sender: Contact | string;
+    _id?: string;
 }

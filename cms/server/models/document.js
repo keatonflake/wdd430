@@ -5,6 +5,7 @@ const documentSchema = mongoose.Schema({
   name: { type: String, required: true },
   url: { type: String, required: true },
   description: { type: String },
-  children: [childSchema],
+  children: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }],
 });
+
 module.exports = mongoose.model("Document", documentSchema);
